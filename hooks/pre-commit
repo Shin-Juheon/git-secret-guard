@@ -1,0 +1,13 @@
+#!/bin/bash
+# 커밋 직전에 스테이징된 변경에서 시크릿 패턴을 찾아 차단하는 훅
+PATTERNS='AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}'
+
+matches=$(git diff --cached -U0 | grep -E '^\+' | grep -E "$PATTERNS")
+
+if [ -n "$matches" ]; then
+  echo "[차단] 커밋에 시크릿으로 의심되는 값이 포함되어 있습니다."
+  echo "$matches"
+  echo "키는 .env 파일로 옮긴 뒤 다시 커밋하세요."
+  exit 1
+fi
+exit 0
